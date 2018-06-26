@@ -6,7 +6,6 @@ const staticUrlsToCache = [
   'css/styles.css',
   'js/main.js',
   'js/dbhelper.js',
-  'data/restaurants.json',
   '404.html',
   'offline.html',
   'restaurant.html'

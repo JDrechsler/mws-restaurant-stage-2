@@ -21,8 +21,14 @@ const cacheStaticRessources = async () => {
   }
 };
 
+/**
+ * @param {RequestInfo} request
+ */
 const useRessourceStrategy = async request => {
   try {
+    /**
+     * @type {Response | undefined}
+     */
     const response = await caches.match(request);
     if (response) {
       //if in cache use cache
@@ -33,6 +39,9 @@ const useRessourceStrategy = async request => {
       //if response 404 (does not exist)
       if (fetchResponse.status === 404) {
         // use offline fallback page
+        /**
+         * @type {Response | undefined}
+         */
         const fallbackPage = await caches.match('404.html');
         return fallbackPage;
       } else {
@@ -42,11 +51,19 @@ const useRessourceStrategy = async request => {
     }
   } catch (error) {
     console.log(error);
+
+    /**
+     * @type {Response | undefined}
+     */
     const offlinePage = await caches.match('offline.html');
     return offlinePage;
   }
 };
 
+/**
+ * @param {RequestInfo} request
+ * @param {Response} res
+ */
 const addRessourceToDynamicCache = async (request, res) => {
   try {
     const dynCache = await caches.open(dynamicCache);

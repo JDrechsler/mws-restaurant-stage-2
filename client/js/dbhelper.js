@@ -13,6 +13,7 @@ class DBHelper {
 
   /**
    * Fetch all restaurants.
+   * @returns {Promise<Array<Restaurant>>}
    */
   static async fetchRestaurants() {
     try {
@@ -30,7 +31,7 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    * @param {number} id
    */
-  static async fetchRestaurantById(id, callback) {
+  static async fetchRestaurantById(id) {
     try {
       const restaurants = await DBHelper.fetchRestaurants();
       const restaurant = restaurants.find(r => r.id == id);
@@ -41,34 +42,6 @@ class DBHelper {
         // Restaurant does not exist in the database
         return 'Restaurant does not exist';
       }
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
-
-  /**
-   * Fetch restaurants by a cuisine type with proper error handling.
-   */
-  static async fetchRestaurantByCuisine(cuisine, callback) {
-    try {
-      const restaurants = await DBHelper.fetchRestaurants();
-      // Filter restaurants to have only given cuisine type
-      return restaurants.filter(r => r.cuisine_type == cuisine);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
-
-  /**
-   * Fetch restaurants by a neighborhood with proper error handling.
-   */
-  static async fetchRestaurantByNeighborhood(neighborhood, callback) {
-    try {
-      const restaurants = await DBHelper.fetchRestaurants();
-      // Filter restaurants to have only given neighborhood
-      return restaurants.filter(r => r.neighborhood == neighborhood);
     } catch (error) {
       console.log(error);
       throw error;
@@ -99,6 +72,7 @@ class DBHelper {
 
   /**
    * Fetch all neighborhoods with proper error handling.
+   * @returns {Array<string>}
    */
   static async fetchNeighborhoods() {
     try {
@@ -119,6 +93,7 @@ class DBHelper {
 
   /**
    * Fetch all cuisines with proper error handling.
+   * @returns {Promise<Array<string>>}
    */
   static async fetchCuisines() {
     try {
@@ -159,6 +134,7 @@ class DBHelper {
 
   /**
    * Map marker for a restaurant.
+   * @param {Restaurant} restaurant
    */
   static mapMarkerForRestaurant(restaurant, map) {
     const marker = new L.marker(

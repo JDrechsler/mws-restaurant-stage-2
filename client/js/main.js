@@ -1,4 +1,6 @@
-let restaurants, neighborhoods, cuisines;
+/** @type {Array<Restaurant>} */ let restaurants;
+/** @type {Array<string>} */ let neighborhoods;
+/** @type {Array<string>} */ let cuisines;
 var newMap;
 var markers = [];
 
@@ -63,6 +65,7 @@ fetchNeighborhoods = async () => {
 
 /**
  * Set neighborhoods HTML.
+ * @param {Array<string> neighborhoods}
  */
 fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
@@ -145,6 +148,7 @@ updateResultsCount = () => {
 
 /**
  * Clear current restaurants, their HTML and remove their map markers.
+ * @param {Array<Restaurant>} restaurants
  */
 resetRestaurants = restaurants => {
   // Remove all restaurants
@@ -162,6 +166,7 @@ resetRestaurants = restaurants => {
 
 /**
  * Create all restaurants HTML and add them to the webpage.
+ * @param {Array<Restaurant>} restaurants
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
@@ -173,6 +178,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 
 /**
  * Create restaurant HTML.
+ * @param {Restaurant} restaurant
  */
 createRestaurantHTML = restaurant => {
   const li = document.createElement('li');
@@ -214,6 +220,7 @@ createRestaurantHTML = restaurant => {
 
 /**
  * Add markers for current restaurants to the map.
+ * @param {Array<Restaurant>} restaurants
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {

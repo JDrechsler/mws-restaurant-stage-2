@@ -73,16 +73,19 @@ const addRessourceToDynamicCache = async (request, res) => {
   }
 };
 
-self.addEventListener('install', event => {
+self.addEventListener('install', (/** @type {ExtendableEvent} */ event) => {
   console.log('SW: Install Event');
   event.waitUntil(cacheStaticRessources());
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (/** @type {Event} */ event) => {
   console.log('SW: Activate Event');
 });
 
-self.addEventListener('fetch', event => {
+/**
+ * @property {string} event
+ */
+self.addEventListener('fetch', (/** @type {FetchEvent} */ event) => {
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(useRessourceStrategy(event.request));
   }

@@ -28,6 +28,7 @@ class DBHelper {
 
   /**
    * Fetch a restaurant by its ID.
+   * @param {number} id
    */
   static async fetchRestaurantById(id, callback) {
     try {

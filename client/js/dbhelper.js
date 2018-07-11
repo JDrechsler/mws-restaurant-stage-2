@@ -50,6 +50,8 @@ class DBHelper {
 
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
+   * @param {string} cuisine
+   * @param {string} neighborhood
    */
   static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood) {
     try {
@@ -113,6 +115,7 @@ class DBHelper {
 
   /**
    * Restaurant page URL.
+   * @param {Restaurant} restaurant
    */
   static urlForRestaurant(restaurant) {
     return `./restaurant.html?id=${restaurant.id}`;
@@ -120,6 +123,7 @@ class DBHelper {
 
   /**
    * Restaurant image URL.
+   * @param {Restaurant} restaurant
    */
   static imageUrlForRestaurant(restaurant) {
     return `./img/${restaurant.photograph}`;
@@ -127,6 +131,7 @@ class DBHelper {
 
   /**
    * Restaurant image alt text
+   * @param {Restaurant} restaurant
    */
   static imageAltForRestaurant(restaurant) {
     return restaurant.imgAlt;

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', event => {
   registerServiceWorker();
 });
 
-initMap = () => {
+const initMap = () => {
   self.newMap = L.map('map', {
     center: [40.722216, -73.987501],
     zoom: 12,
@@ -37,7 +37,7 @@ initMap = () => {
   updateRestaurants();
 };
 
-registerServiceWorker = () => {
+const registerServiceWorker = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
@@ -53,7 +53,7 @@ registerServiceWorker = () => {
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-fetchNeighborhoods = async () => {
+const fetchNeighborhoods = async () => {
   try {
     const neighborhoods = await DBHelper.fetchNeighborhoods();
     self.neighborhoods = neighborhoods;
@@ -67,7 +67,7 @@ fetchNeighborhoods = async () => {
  * Set neighborhoods HTML.
  * @param {Array<string> neighborhoods}
  */
-fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
+const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
@@ -80,7 +80,7 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 /**
  * Fetch all cuisines and set their HTML.
  */
-fetchCuisines = async () => {
+const fetchCuisines = async () => {
   try {
     const cuisines = await DBHelper.fetchCuisines();
     self.cuisines = cuisines;
@@ -92,8 +92,9 @@ fetchCuisines = async () => {
 
 /**
  * Set cuisines HTML.
+ * @param {Array<string>} cuisines
  */
-fillCuisinesHTML = (cuisines = self.cuisines) => {
+const fillCuisinesHTML = (cuisines = self.cuisines) => {
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
@@ -107,7 +108,7 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = async () => {
+const updateRestaurants = async () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -133,7 +134,7 @@ updateRestaurants = async () => {
 /**
  * Update results with aria-live
  */
-updateResultsCount = () => {
+const updateResultsCount = () => {
   const resultsList = document.getElementById('restaurants-list');
   const numResults = resultsList.children.length;
   const spanCountElement = document.getElementsByClassName('results-count')[0];
@@ -150,7 +151,7 @@ updateResultsCount = () => {
  * Clear current restaurants, their HTML and remove their map markers.
  * @param {Array<Restaurant>} restaurants
  */
-resetRestaurants = restaurants => {
+const resetRestaurants = restaurants => {
   // Remove all restaurants
   self.restaurants = [];
   const ul = document.getElementById('restaurants-list');
@@ -168,7 +169,7 @@ resetRestaurants = restaurants => {
  * Create all restaurants HTML and add them to the webpage.
  * @param {Array<Restaurant>} restaurants
  */
-fillRestaurantsHTML = (restaurants = self.restaurants) => {
+const fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
     ul.appendChild(createRestaurantHTML(restaurant));
@@ -180,7 +181,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  * Create restaurant HTML.
  * @param {Restaurant} restaurant
  */
-createRestaurantHTML = restaurant => {
+const createRestaurantHTML = restaurant => {
   const li = document.createElement('li');
   //todo add lazy loading like here: https://codepen.io/malchata/pen/YeMyrQ
   const image = document.createElement('img');
@@ -222,7 +223,7 @@ createRestaurantHTML = restaurant => {
  * Add markers for current restaurants to the map.
  * @param {Array<Restaurant>} restaurants
  */
-addMarkersToMap = (restaurants = self.restaurants) => {
+const addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);

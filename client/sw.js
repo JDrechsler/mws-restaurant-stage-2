@@ -1,3 +1,7 @@
+importScripts(
+  'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js' //Src: https://www.npmjs.com/package/idb-keyval
+);
+
 const staticCache = 'mws-p1-static-cache-1';
 const dynamicCache = 'mws-p1-dynamic-cache-1';
 const staticUrlsToCache = [
@@ -62,6 +66,18 @@ const useRessourceStrategy = async request => {
 
 /**
  * @param {RequestInfo} request
+ */
+const addRestaurantDataToDB = async request => {
+  console.log('trying to add response of restaurant to db');
+  const res = await fetch(request.url);
+  if (res.ok) {
+    const restaurantData = await res.json();
+    idbKeyval.set('restaurantsData', restaurantData.restaurants);
+  }
+};
+
+/**
+ * @param {RequestInfo} request
  * @param {Response} res
  */
 const addRessourceToDynamicCache = async (request, res) => {
@@ -82,10 +98,11 @@ self.addEventListener('activate', (/** @type {Event} */ event) => {
   console.log('SW: Activate Event');
 });
 
-/**
- * @property {string} event
- */
 self.addEventListener('fetch', (/** @type {FetchEvent} */ event) => {
+  // response.headers.get('Content-Type')
+  if (event.request.url.endsWith('restaurants.json')) {
+    addRestaurantDataToDB(event.request.clone());
+  }
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(useRessourceStrategy(event.request));
   }

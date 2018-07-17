@@ -32,6 +32,6 @@ app.get('/', function(request, response) {
   response.send('Server is up and running. Yay!');
 });
 
-app.get('/restaurants', function name(req, res) {
+app.get('/restaurants.json', function name(req, res) {
   res.send(restaurants);
 });

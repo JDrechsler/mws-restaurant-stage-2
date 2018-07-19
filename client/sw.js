@@ -8,11 +8,16 @@ const staticUrlsToCache = [
   './',
   'index.html',
   'css/styles.css',
+  'css/leaflet.css',
   'js/main.js',
   'js/dbhelper.js',
   '404.html',
   'offline.html',
-  'restaurant.html'
+  'restaurant.html',
+  'js/idb-keyval-iife.min.js',
+  'js/leaflet.js',
+  'css/images/marker-icon.png',
+  'css/images/marker-shadow.png'
 ];
 
 const cacheStaticRessources = async () => {
@@ -99,9 +104,9 @@ self.addEventListener('activate', (/** @type {Event} */ event) => {
 });
 
 self.addEventListener('fetch', (/** @type {FetchEvent} */ event) => {
-  // response.headers.get('Content-Type')
-  if (event.request.url.endsWith('restaurants.json')) {
+  if (event.request.url.endsWith('/restaurants')) {
     addRestaurantDataToDB(event.request.clone());
+    event.respondWith(fetch(event.request));
   }
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(useRessourceStrategy(event.request));

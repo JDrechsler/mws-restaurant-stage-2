@@ -71,18 +71,6 @@ const useRessourceStrategy = async request => {
 
 /**
  * @param {RequestInfo} request
- */
-const addRestaurantDataToDB = async request => {
-  console.log('trying to add response of restaurant to db');
-  const res = await fetch(request.url);
-  if (res.ok) {
-    const restaurantData = await res.json();
-    idbKeyval.set('restaurantsData', restaurantData.restaurants);
-  }
-};
-
-/**
- * @param {RequestInfo} request
  * @param {Response} res
  */
 const addRessourceToDynamicCache = async (request, res) => {
@@ -104,10 +92,6 @@ self.addEventListener('activate', (/** @type {Event} */ event) => {
 });
 
 self.addEventListener('fetch', (/** @type {FetchEvent} */ event) => {
-  if (event.request.url.endsWith('/restaurants')) {
-    addRestaurantDataToDB(event.request.clone());
-    event.respondWith(fetch(event.request));
-  }
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(useRessourceStrategy(event.request));
   }

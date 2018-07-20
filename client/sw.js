@@ -1,7 +1,3 @@
-importScripts(
-  'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js' //Src: https://www.npmjs.com/package/idb-keyval
-);
-
 const staticCache = 'mws-p1-static-cache-1';
 const dynamicCache = 'mws-p1-dynamic-cache-1';
 const staticUrlsToCache = [
@@ -26,7 +22,7 @@ const cacheStaticRessources = async () => {
     await cache.addAll(staticUrlsToCache);
     console.log('cached static ressources');
   } catch (error) {
-    console.log(`An error happened during static assets caching: ${error}`); //TODO: better error handling and more detailed error
+    console.log(`An error happened during static assets caching: ${error}`);
   }
 };
 

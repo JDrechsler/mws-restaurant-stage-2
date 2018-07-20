@@ -126,9 +126,16 @@ const updateRestaurants = async () => {
     resetRestaurants(restaurantsByCuisineAndNeighborhood);
     fillRestaurantsHTML();
     updateResultsCount();
+    lazyLoadImages();
   } catch (error) {
     console.error(error);
   }
+};
+
+const lazyLoadImages = () => {
+  var myLazyLoad = new LazyLoad({
+    elements_selector: '.lazy'
+  });
 };
 
 /**
@@ -185,16 +192,20 @@ const createRestaurantHTML = restaurant => {
   const li = document.createElement('li');
   //todo add lazy loading like here: https://codepen.io/malchata/pen/YeMyrQ
   const image = document.createElement('img');
-  image.className = 'restaurant-img';
+  image.className = 'restaurant-img lazy';
   /**@type {string} */
   const imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
 
   const imgSrc200 = imgSrc.replace('_400', '_200');
   const imgSrc400 = imgSrc;
 
-  image.srcset = `${imgSrc200} 200w, ${imgSrc400} 400w`;
-  image.sizes = `(max-width: 350px) 200px, (min-width: 400px) 250px`;
-  image.src = imgSrc;
+  image.setAttribute('data-src', imgSrc);
+  image.setAttribute('data-srcset', `${imgSrc200} 200w, ${imgSrc400} 400w`);
+  image.setAttribute(
+    'data-sizes',
+    `(max-width: 350px) 200px, (min-width: 400px) 250px`
+  );
+
   image.alt = DBHelper.imageAltForRestaurant(restaurant);
   li.appendChild(image);
 
@@ -236,3 +247,308 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 };
+
+//idbkeyval library  https://www.npmjs.com/package/idb-keyval
+var idbKeyval = (function(e) {
+  'use strict';
+  class t {
+    constructor(e = 'keyval-store', t = 'keyval') {
+      (this.storeName = t),
+        (this._dbp = new Promise((r, n) => {
+          const o = indexedDB.open(e, 1);
+          (o.onerror = () => n(o.error)),
+            (o.onsuccess = () => r(o.result)),
+            (o.onupgradeneeded = () => {
+              o.result.createObjectStore(t);
+            });
+        }));
+    }
+    _withIDBStore(e, t) {
+      return this._dbp.then(
+        r =>
+          new Promise((n, o) => {
+            const s = r.transaction(this.storeName, e);
+            (s.oncomplete = () => n()),
+              (s.onabort = s.onerror = () => o(s.error)),
+              t(s.objectStore(this.storeName));
+          })
+      );
+    }
+  }
+  let r;
+  function n() {
+    return r || (r = new t()), r;
+  }
+  return (
+    (e.Store = t),
+    (e.get = function(e, t = n()) {
+      let r;
+      return t
+        ._withIDBStore('readonly', t => {
+          r = t.get(e);
+        })
+        .then(() => r.result);
+    }),
+    (e.set = function(e, t, r = n()) {
+      return r._withIDBStore('readwrite', r => {
+        r.put(t, e);
+      });
+    }),
+    (e.del = function(e, t = n()) {
+      return t._withIDBStore('readwrite', t => {
+        t.delete(e);
+      });
+    }),
+    (e.clear = function(e = n()) {
+      return e._withIDBStore('readwrite', e => {
+        e.clear();
+      });
+    }),
+    (e.keys = function(e = n()) {
+      const t = [];
+      return e
+        ._withIDBStore('readonly', e => {
+          (e.openKeyCursor || e.openCursor).call(e).onsuccess = function() {
+            this.result && (t.push(this.result.key), this.result.continue());
+          };
+        })
+        .then(() => t);
+    }),
+    e
+  );
+})({});
+
+//Lazy Load Library https://github.com/verlok/lazyload
+var _extends =
+    Object.assign ||
+    function(e) {
+      for (var t = 1; t < arguments.length; t++) {
+        var n = arguments[t];
+        for (var r in n)
+          Object.prototype.hasOwnProperty.call(n, r) && (e[r] = n[r]);
+      }
+      return e;
+    },
+  _typeof =
+    'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+      ? function(e) {
+          return typeof e;
+        }
+      : function(e) {
+          return e &&
+            'function' == typeof Symbol &&
+            e.constructor === Symbol &&
+            e !== Symbol.prototype
+            ? 'symbol'
+            : typeof e;
+        };
+!(function(e, t) {
+  'object' ===
+    ('undefined' == typeof exports ? 'undefined' : _typeof(exports)) &&
+  'undefined' != typeof module
+    ? (module.exports = t())
+    : 'function' == typeof define && define.amd
+      ? define(t)
+      : (e.LazyLoad = t());
+})(this, function() {
+  'use strict';
+  var r = 'data-',
+    s = 'was-processed',
+    a = 'true',
+    l = function(e, t) {
+      return e.getAttribute(r + t);
+    },
+    o = function(e) {
+      return (t = s), (n = a), e.setAttribute(r + t, n);
+      var t, n;
+    },
+    i = function(e) {
+      return l(e, s) === a;
+    };
+  function c(e) {
+    return e.filter(function(e) {
+      return !i(e);
+    });
+  }
+  var u = function(e, t) {
+    var n,
+      r = 'LazyLoad::Initialized',
+      s = new e(t);
+    try {
+      n = new CustomEvent(r, { detail: { instance: s } });
+    } catch (e) {
+      (n = document.createEvent('CustomEvent')).initCustomEvent(r, !1, !1, {
+        instance: s
+      });
+    }
+    window.dispatchEvent(n);
+  };
+  var d = function(e, t, n) {
+      for (var r, s = 0; (r = e.children[s]); s += 1)
+        if ('SOURCE' === r.tagName) {
+          var a = l(r, n);
+          a && r.setAttribute(t, a);
+        }
+    },
+    f = function(e, t, n) {
+      n && e.setAttribute(t, n);
+    },
+    v = function(e, t) {
+      var n = t.data_sizes,
+        r = t.data_srcset,
+        s = t.data_src,
+        a = l(e, s);
+      switch (e.tagName) {
+        case 'IMG':
+          var o = e.parentNode;
+          o && 'PICTURE' === o.tagName && d(o, 'srcset', r);
+          var i = l(e, n);
+          f(e, 'sizes', i);
+          var c = l(e, r);
+          f(e, 'srcset', c), f(e, 'src', a);
+          break;
+        case 'IFRAME':
+          f(e, 'src', a);
+          break;
+        case 'VIDEO':
+          d(e, 'src', s), f(e, 'src', a);
+          break;
+        default:
+          a && (e.style.backgroundImage = 'url("' + a + '")');
+      }
+    },
+    e = 'undefined' != typeof window,
+    t = e && 'IntersectionObserver' in window,
+    _ = e && 'classList' in document.createElement('p'),
+    m = function(e, t) {
+      _ ? e.classList.add(t) : (e.className += (e.className ? ' ' : '') + t);
+    },
+    b = function(e, t) {
+      e && e(t);
+    },
+    h = 'load',
+    p = 'error',
+    y = function(e, t, n) {
+      e.removeEventListener(h, t), e.removeEventListener(p, n);
+    },
+    g = function(n, r) {
+      var s = function e(t) {
+          E(t, !0, r), y(n, e, a);
+        },
+        a = function e(t) {
+          E(t, !1, r), y(n, s, e);
+        };
+      n.addEventListener(h, s), n.addEventListener(p, a);
+    },
+    E = function(e, t, n) {
+      var r,
+        s,
+        a = e.target;
+      (r = a),
+        (s = n.class_loading),
+        _
+          ? r.classList.remove(s)
+          : (r.className = r.className
+              .replace(new RegExp('(^|\\s+)' + s + '(\\s+|$)'), ' ')
+              .replace(/^\s+/, '')
+              .replace(/\s+$/, '')),
+        m(a, t ? n.class_loaded : n.class_error),
+        b(t ? n.callback_load : n.callback_error, a);
+    };
+  var n = function(e, t) {
+    var n;
+    (this._settings = ((n = {
+      elements_selector: 'img',
+      container: document,
+      threshold: 300,
+      data_src: 'src',
+      data_srcset: 'srcset',
+      data_sizes: 'sizes',
+      class_loading: 'loading',
+      class_loaded: 'loaded',
+      class_error: 'error',
+      callback_load: null,
+      callback_error: null,
+      callback_set: null,
+      callback_enter: null
+    }),
+    _extends({}, n, e))),
+      this._setObserver(),
+      this.update(t);
+  };
+  n.prototype = {
+    _setObserver: function() {
+      var r = this;
+      if (t) {
+        var e;
+        this._observer = new IntersectionObserver(
+          function(e) {
+            e.forEach(function(e) {
+              if ((n = e).isIntersecting || 0 < n.intersectionRatio) {
+                var t = e.target;
+                r.load(t), r._observer.unobserve(t);
+              }
+              var n;
+            }),
+              (r._elements = c(r._elements));
+          },
+          {
+            root:
+              (e = this._settings).container === document ? null : e.container,
+            rootMargin: e.threshold + 'px'
+          }
+        );
+      }
+    },
+    loadAll: function() {
+      var t = this;
+      this._elements.forEach(function(e) {
+        t.load(e);
+      }),
+        (this._elements = c(this._elements));
+    },
+    update: function(e) {
+      var t = this,
+        n = this._settings,
+        r = e || n.container.querySelectorAll(n.elements_selector);
+      (this._elements = c(Array.prototype.slice.call(r))),
+        this._observer
+          ? this._elements.forEach(function(e) {
+              t._observer.observe(e);
+            })
+          : this.loadAll();
+    },
+    destroy: function() {
+      var t = this;
+      this._observer &&
+        (c(this._elements).forEach(function(e) {
+          t._observer.unobserve(e);
+        }),
+        (this._observer = null)),
+        (this._elements = null),
+        (this._settings = null);
+    },
+    load: function(e, t) {
+      var n, r;
+      (n = e),
+        (r = this._settings),
+        (!t && i(n)) ||
+          (b(r.callback_enter, n),
+          -1 < ['IMG', 'IFRAME', 'VIDEO'].indexOf(n.tagName) &&
+            (g(n, r), m(n, r.class_loading)),
+          v(n, r),
+          o(n),
+          b(r.callback_set, n));
+    }
+  };
+  var w = window.lazyLoadOptions;
+  return (
+    e &&
+      w &&
+      (function(e, t) {
+        if (t.length) for (var n, r = 0; (n = t[r]); r += 1) u(e, n);
+        else u(e, t);
+      })(n, w),
+    n
+  );
+});

@@ -17,13 +17,19 @@ class DBHelper {
    */
   static async fetchRestaurants() {
     try {
-      const response = await fetch(DBHelper.DATABASE_URL);
-      if (response.status === 200) {
-        const data = await response.json();
-        return data.restaurants;
+      const restData = await idbKeyval.get('restaurantsData');
+      if (restData !== undefined) {
+        return restData;
+      } else {
+        const response = await fetch(DBHelper.DATABASE_URL);
+        if (response.status === 200) {
+          const data = await response.json();
+          await idbKeyval.set('restaurantsData', data.restaurants);
+          return data.restaurants;
+        }
       }
     } catch (error) {
-      return error;
+      console.log(error);
     }
   }
 

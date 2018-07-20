@@ -1,14 +1,23 @@
+importScripts(
+  'https://cdn.jsdelivr.net/npm/idb-keyval@3/dist/idb-keyval-iife.min.js' //Src: https://www.npmjs.com/package/idb-keyval
+);
+
 const staticCache = 'mws-p1-static-cache-1';
 const dynamicCache = 'mws-p1-dynamic-cache-1';
 const staticUrlsToCache = [
   './',
   'index.html',
   'css/styles.css',
+  'css/leaflet.css',
   'js/main.js',
   'js/dbhelper.js',
   '404.html',
   'offline.html',
-  'restaurant.html'
+  'restaurant.html',
+  'js/idb-keyval-iife.min.js',
+  'js/leaflet.js',
+  'css/images/marker-icon.png',
+  'css/images/marker-shadow.png'
 ];
 
 const cacheStaticRessources = async () => {
@@ -82,9 +91,6 @@ self.addEventListener('activate', (/** @type {Event} */ event) => {
   console.log('SW: Activate Event');
 });
 
-/**
- * @property {string} event
- */
 self.addEventListener('fetch', (/** @type {FetchEvent} */ event) => {
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(useRessourceStrategy(event.request));

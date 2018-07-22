@@ -74,7 +74,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.className = 'restaurant-img';
 
   /**@type {string} */
-  const imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
+  const imgSrc = DBHelper.imageUrlForRestaurant(restaurant) + '_400.jpg';
 
   const imgSrc200 = imgSrc.replace('_400', '_200');
   const imgSrc400 = imgSrc;
